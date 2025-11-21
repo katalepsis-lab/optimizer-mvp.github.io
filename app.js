@@ -1,8 +1,14 @@
 /* ============================================
    CONFIG + STATE
 ============================================ */
+// ** NEW: Define a base URL for your API **
+// When developing locally, this should be your local server.
+// When deployed, you MUST change this to your public domain (e.g., 'https://your-server.com').
+const API_BASE_URL = "https://katalepsis-lab.github.io/optimizer-mvp.github.io/"; // CHANGE THIS TO YOUR PUBLIC URL WHEN DEPLOYING
 
 const STORAGE_KEY = "local_chat_state_v1";
+// ... (rest of the file)
+
 
 let conversations = [];
 let currentConversationId = null;
@@ -25,6 +31,8 @@ const newOptChatBtn = document.getElementById("newOptChatBtn");
 const modelSelectEl = document.getElementById("modelSelect");
 const keepContextToggle = document.getElementById("keepContextToggle");
 const micBtn = document.getElementById("micBtn");
+
+
 
 /* VOICE RECORDING */
 let mediaRecorder = null;
@@ -354,7 +362,7 @@ async function sendMessage() {
   }
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/chat", {
+    const res = await fetch(`${API_BASE_URL}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -407,7 +415,7 @@ async function startRecording() {
       const blob = new Blob(audioChunks, { type: "audio/webm" });
       const base64 = await blobToBase64(blob);
 
-      const res = await fetch("http://127.0.0.1:8000/api/transcribe", {
+      const res = await fetch(`${API_BASE_URL}/api/transcribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ audio: base64 }),
@@ -455,7 +463,7 @@ async function playTTS(text, playBtn, stopBtn) {
     stopBtn.classList.remove("hidden");
     playBtn.classList.add("hidden");
 
-    const res = await fetch("http://127.0.0.1:8000/api/tts", {
+    const res = await fetch(`${API_BASE_URL}/api/tts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
@@ -550,7 +558,7 @@ fileInput.onchange = async () => {
   appendMessageToDOM("user", `📁 Uploaded: ${file.name}`, false);
 
   // Send to backend
-  const res = await fetch("http://127.0.0.1:8000/api/upload", {
+  const res = await fetch(`${API_BASE_URL}/api/upload`, {
     method: "POST",
     body: formData,
   });
